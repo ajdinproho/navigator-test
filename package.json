@@ -1,4 +1,24 @@
 {
+  "name": "navigator-test",
+  "version": "1.0.0",
+  "description": "Testing task for Navigator",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx cypress run"
+   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ajdinproho/navigator-test.git"
+  },
+  "keywords": [
+    "navigator"
+  ],
+  "author": "Ajdin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ajdinproho/navigator-test/issues"
+  },
+  "homepage": "https://github.com/ajdinproho/navigator-test#readme",
   "devDependencies": {
     "cypress": "^14.3.2"
   }
