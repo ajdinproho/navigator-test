@@ -38,4 +38,10 @@ describe('Navigator test', () => {
     cy.get('.place_details').find('.breadcrumbs-container').should('contain', 'Pozorište');
     cy.get('.place_details').find('.breadcrumbs-container').should('contain', 'Narodno pozorište');
   });
+  it('Nakon što je otvoreno Narodno pozorište, provjeri podatke o pozorištu koji su prikazani lijevo', () => {
+    cy.get('.place_details').find('.content').find('.basic-info').should('contain', 'Obala Kulina bana 9');
+    cy.get('.place_details').find('.content').find('.basic-info').should('contain', '033 226 431');
+    cy.get('.place_details').find('.content').find('.basic-info').should('contain', 'np@npsa.ba');
+    cy.get('.place_details').find('.description-container').should('contain', 'Narodno pozorište Sarajevo osnovano je 17. 11. 1919. godine');
+  });
 });
