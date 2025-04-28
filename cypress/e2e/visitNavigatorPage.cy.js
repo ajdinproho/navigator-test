@@ -1,6 +1,7 @@
-describe('Navigator', () => {
-  it('Visit navigator page', () => {
-    cy.visit('www.navigator.ba')
+describe('Navigator test', () => {
+  it('Otvori navigator stranicu i provjeri default URL', () => {
+    cy.visit('www.navigator.ba');
+    //check url
     cy.url().should('include', 'www.navigator.ba/#/categories')
-  })
-})
+  });
+});
