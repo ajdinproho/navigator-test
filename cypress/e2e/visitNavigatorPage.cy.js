@@ -22,4 +22,11 @@ describe('Navigator test', () => {
     cy.getCategory('BIZNIS');
     cy.getCategory('GRADSKE ULICE');
   });
+  it('Provjeri da li je default stranica prikazana dobro na tablet viewportu', () => {
+    cy.viewport('ipad-2');
+    cy.get('#header_container').find('.navigation').find('span').should('have.class', 'iconav-plus');
+    cy.get('#header_container').find('.navigation').find('.iconav-plus').parent().find('.text').contains('Kreiraj objekat').should('not.be.visible');
+    cy.get('#header_container').find('.navigation').find('span').should('have.class', 'iconav-bubble-2');
+    cy.get('#header_container').find('.navigation').find('.iconav-bubble-2').parent().find('.text').contains('Predloži ideju - Pošalji komentar').should('not.be.visible');
+  });
 });
