@@ -29,4 +29,13 @@ describe('Navigator test', () => {
     cy.get('#header_container').find('.navigation').find('span').should('have.class', 'iconav-bubble-2');
     cy.get('#header_container').find('.navigation').find('.iconav-bubble-2').parent().find('.text').contains('Predloži ideju - Pošalji komentar').should('not.be.visible');
   });
+  it('Otvori Sarajevska pozorista, klikni na Narodno pozorište na mapi i provjeri je li otvoreno', () => {
+    cy.get('.categories').find('.list-item').contains('SARAJEVSKA POZORIŠTA').click();
+    cy.url().should('include', 'www.navigator.ba/#/list/sarajevska-pozorista');
+    cy.wait(500);
+    cy.get('.leaflet-marker-pane').contains('Narodno pozorište').click();
+    cy.url().should('include', 'www.navigator.ba/#/p/narodno-pozoriste?list=sarajevska-pozorista');
+    cy.get('.place_details').find('.breadcrumbs-container').should('contain', 'Pozorište');
+    cy.get('.place_details').find('.breadcrumbs-container').should('contain', 'Narodno pozorište');
+  });
 });
