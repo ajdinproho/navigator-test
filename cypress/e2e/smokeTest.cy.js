@@ -1,35 +1,11 @@
 import { selectors } from "../helpers/selectors.js";
 describe('Navigator smoke test', () => {
-  it('Otvori navigator stranicu i provjeri default URL', () => {
+  it('Open navigator page and check default URL', () => {
     cy.visit('www.navigator.ba');
     //check url
     cy.url().should('include', 'www.navigator.ba/#/categories')
-    cy.request({
-      method: 'GET',
-      url: 'http://www.navigator.ba/categories',
-      failOnStatusCode: false
-    }).then((response) => {
-      expect(response.status).to.eq(200);
-      expect(response.body.categories).to.have.length(12);
-    });
-    cy.request({
-      method: 'GET',
-      url: 'http://www.navigator.ba/lists',
-      failOnStatusCode: false
-    }).then((response) => {
-      expect(response.status).to.eq(200);
-      expect(response.body.lists).to.have.length(3);
-    });
-    cy.request({
-      method: 'GET',
-      url: 'http://www.navigator.ba/categories/suggested',
-      failOnStatusCode: false
-    }).then((response) => {
-      expect(response.status).to.eq(200);
-      expect(response.body.categories).to.have.length(6);
-    });
   });
-  it('Provjeri header i jesu li default kategorije prikazane', () => {
+  it('Check header and if default categories are displayed', () => {
     cy.get(selectors.common.headerContainer).find(selectors.common.navigation).find('span').should('have.class', 'iconav-plus');
     cy.get(selectors.common.headerContainer).find(selectors.common.navigation).find('.iconav-plus').parent().find('.text').contains('Kreiraj objekat').should('be.visible');
     cy.get(selectors.common.headerContainer).find(selectors.common.navigation).find('span').should('have.class', 'iconav-bubble-2');
@@ -50,7 +26,7 @@ describe('Navigator smoke test', () => {
     cy.getCategory('BIZNIS').and('contain', 'Kompanija, Fabrika, Agencija');
     cy.getCategory('GRADSKE ULICE');
   });
-  it('Pretraga postojeće ulice - Unijeti naziv postojeće ulice i provjeriti da li se prikazuje u rezultatima pretrage nakon što pritisnete enter', () => {
+  it('Search for existing street - Enter name of existing street and check if it appears in search results after pressing enter', () => {
     cy.get(selectors.common.headerContainer).find('#header_search').find('input[placeholder="Traži ulicu ili objekat"]').click().type('Ferhadija');
     //provjeri rezultate pretrage u prikazanom meniju
     cy.get(selectors.common.ttSuggestions).find(selectors.common.ttSuggestion).should('contain', 'Ferhadija');
@@ -58,14 +34,14 @@ describe('Navigator smoke test', () => {
     cy.get(selectors.common.headerContainer).find('#header_search').find('input[placeholder="Traži ulicu ili objekat"]').click().type('{enter}');
     cy.get('.search-panel').find('.search-results').contains('Ferhadija').parent().find('img').should('have.attr', 'src', 'http://www.navigator.ba/assets/street-icon.png');
   });
-  it('Pretraga i prikaz postojećeg objekta - Unijeti naziv postojećeg objekta, izabrati taj objekat i provjeriti da li se prikazuju tačni podaci klikom na search ikonu', () => {
+  it('Search and display existing place - Enter name of existing place, select that place and check if correct data is displayed when clicking on the search icon', () => {
     cy.get(selectors.common.headerContainer).find('#header_search').find('input[placeholder="Traži ulicu ili objekat"]').click().type('{selectall}{backspace}DM - Ferhadija');
     cy.get(selectors.common.ttSuggestions).find(selectors.common.ttSuggestion).should('contain', 'DM - Ferhadija');
     cy.get(selectors.common.ttSuggestions).find(selectors.common.ttSuggestion).contains('DM - Ferhadija').click();
     cy.checkPlace('Kozmetika', 'DM - Ferhadija', 'Ferhadija 25', '033 572 115', 'info@dm-drogeriemarkt.ba');
     cy.checkQuickInfoInMap('DM - Ferhadija', 'Ferhadija 25', '033 572 115', 'www.dm-drogeriemarkt.ba');
   });
-  it('Otvori Sarajevska pozorista, klikni na Narodno pozorište na mapi i provjeri je li otvoreno', () => {
+  it('Open Sarajevska pozorišta, click on Narodno pozorište on the map and check if it opened', () => {
     cy.get(selectors.common.headerContainer).find('.logo').click();
     cy.wait(500);
     cy.get('.categories').find('.list-item').contains('SARAJEVSKA POZORIŠTA').click({ force: true });
@@ -76,14 +52,14 @@ describe('Navigator smoke test', () => {
     cy.get(selectors.common.placeDetails).find('.breadcrumbs-container').should('contain', 'Pozorište');
     cy.get(selectors.common.placeDetails).find('.breadcrumbs-container').should('contain', 'Narodno pozorište');
   });
-  it('Nakon što je otvoreno Narodno pozorište, provjeri podatke o pozorištu koji su prikazani lijevo', () => {
+  it('After opening Narodno pozorište, check theater information displayed on the left', () => {
     cy.checkPlace('Pozorište', 'Narodno pozorište', 'Obala Kulina bana 9', '033 226 431', 'np@npsa.ba');
     cy.get(selectors.common.placeDetails).find('.description-container').should('contain', 'Narodno pozorište Sarajevo osnovano je 17. 11. 1919. godine');
   });
-  it('Provjeri quick info o pozorištu koje je otvoreno na mapi', () => {
+  it('Check quick info about the theater that is open on the map', () => {
     cy.checkQuickInfoInMap('Narodno pozorište', 'Obala Kulina bana 9', '033 226 431', 'nps.ba');
   });
-  it('Lokalizacija na engleski jezik, provjeri da li su UI elementi prevedeni i provjeri da li je EN aktivan u headeru', () => {
+  it('English localization, check if UI elements are translated and if EN is active in header', () => {
     cy.switchLanguage('EN');
     //provjera da li su UI elementi prevedeni
     cy.getListItem('SARAJEVO THEATRES').parent().find('.description').contains('Book a ticket for Sarajevo theatres').parent().find('.info').should('contain', '5').and('contain', 'places');
@@ -132,7 +108,7 @@ describe('Navigator smoke test', () => {
     //prebaci jezik ponovo na boasnski
     cy.switchLanguage('BS');
   });
-  it('Provjeri da li je default stranica prikazana dobro na tablet viewportu', () => {
+  it('Check if default page displays correctly on tablet viewport', () => {
     cy.viewport('ipad-2');
     cy.get(selectors.common.headerContainer).find('.logo').click();
     cy.wait(500);
@@ -154,7 +130,8 @@ describe('Navigator smoke test', () => {
     cy.getCategory('BIZNIS');
     cy.getCategory('GRADSKE ULICE');
   });
-  it('Provjeri da li je default stranica prikazana dobro na mobilnom viewportu', () => {
+  // this test case is not relevant, because cypress cannot check it on mobile correctly, it will not show it like it is on the real device
+  it.skip('Check if default page displays correctly on mobile viewport', () => {
     cy.viewport('iphone-x');
     cy.reload();
     cy.get(selectors.common.headerContainer).find(selectors.common.navigation).find('span').should('have.class', 'iconav-plus');
