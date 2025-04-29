@@ -1,3 +1,4 @@
+import { selectors } from "../helpers/selectors.js";
 // ***********************************************
 // This example commands.js shows you how to
 // create various custom commands and overwrite
@@ -26,4 +27,29 @@
 
 Cypress.Commands.add('getCategory', (category) => {
     cy.get('.categories').find('li').contains(`${category}`);
+});
+
+Cypress.Commands.add('getListItem', (listItem) => {
+    cy.get('.categories').find('.list-item').contains(`${listItem}`);
+});
+
+Cypress.Commands.add('checkPlace', (category, title, street, contact, mail) => {
+    cy.get(selectors.common.placeDetails).find(selectors.common.breadcrumbsContainer).should('contain', `${category}`);
+    cy.get(selectors.common.placeDetails).find(selectors.common.breadcrumbsContainer).should('contain', `${title}`);
+    cy.get(selectors.common.placeDetails).find(selectors.common.content).find(selectors.common.basicInfo).should('contain', `${street}`);
+    cy.get(selectors.common.placeDetails).find(selectors.common.content).find(selectors.common.basicInfo).should('contain', `${contact}`);
+    cy.get(selectors.common.placeDetails).find(selectors.common.content).find(selectors.common.basicInfo).should('contain', `${mail}`);
+});
+
+Cypress.Commands.add('checkQuickInfoInMap', (title, street, contact, web) => {
+    cy.get(selectors.common.leafletPopupContentWrapper).contains(`${title}`);
+    cy.get(selectors.common.leafletPopupContentWrapper).contains(`${title}`).parent().should('contain', `${street}`);
+    cy.get(selectors.common.leafletPopupContentWrapper).contains(`${title}`).parent().should('contain', `${contact}`);
+    cy.get(selectors.common.leafletPopupContentWrapper).contains(`${title}`).parent().should('contain', `${web}`);
+});
+
+Cypress.Commands.add('switchLanguage', (language) => {
+    cy.get('#header_container').find('.languages').contains(`${language}`).click();
+    //provjera da li je EN aktivan u headeru
+    cy.get('#header_container').find('.languages').contains(`${language}`).parent().should('have.class', 'active');
 });
