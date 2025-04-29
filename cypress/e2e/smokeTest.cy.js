@@ -86,7 +86,7 @@ describe('Navigator smoke test', () => {
       .contains('Ferhadija')
       .parent()
       .find('img')
-      .should('have.attr', 'src', 'http://www.navigator.ba/assets/street-icon.png');
+      .should('have.attr', 'src', 'http://www.navigator.ba/assets/street-icon@2x.png');
   });
   it('Search and display existing place - Enter name of existing place, select that place and check if correct data is displayed when clicking on the search icon', () => {
     cy.get(selectors.common.headerContainer)
@@ -131,6 +131,7 @@ describe('Navigator smoke test', () => {
     cy.checkQuickInfoInMap('Narodno pozorište', 'Obala Kulina bana 9', '033 226 431', 'nps.ba');
   });
   it('English localization - check if UI elements are translated and if EN is active in header', () => {
+    cy.openHomePageClickingOnLogoInHeader().click();
     cy.switchLanguage('EN');
     // check are categories translated
     cy.getListItem('SARAJEVO THEATRES')
