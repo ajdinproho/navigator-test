@@ -1,3 +1,5 @@
+import { selectors } from '../helpers/selectors.js';
+
 describe('Navigator tests', () => {
   it('Open navigator page and verify that requests made on page load are successful', () => {
     cy.visit('www.navigator.ba');
@@ -88,5 +90,17 @@ describe('Navigator tests', () => {
       .and('contain', 'Došlo je do neočekivane greške. Molimo pokušajte ponovo')
       .and('have.css', 'color', 'rgb(185, 74, 72)');
     });
+  });
+  it('Check recent search clicking on a button - it should search for last searched word', () => {
+    cy.searchForSomethingPressingEnter('Pionirska dolina');
+    cy.get('.search-results').find('li').contains('Zoološki vrt Pionirska dolina').should('be.visible');
+    // navigate to the homepage
+    cy.openHomePageClickingOnLogoInHeader();
+    // new button Rezultati pretrage should appear - click on it should open last searched place
+    cy.getCategory('REZULTATI PRETRAGE').click({ force: true });
+    cy.get(selectors.common.headerContainer)
+      .find(selectors.common.headerSearch)
+      .should('contain', 'Pionirska dolina');
+    cy.get('.search-results').find('li').contains('Zoološki vrt Pionirska dolina').should('be.visible');
   });
 });
