@@ -8,5 +8,9 @@ export const selectors = {
         headerContainer: '#header_container',
         headerSearch: '#header_search',
         navigation: '.navigation',
+        ttSuggestions: '.tt-suggestions',
+        ttSuggestion: '.tt-suggestion',
+        navLefthandFormContainer:'.nav-lefthand-form-container',
+        aboutPage:'.about-page',
     },
 };
