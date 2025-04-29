@@ -57,4 +57,36 @@ describe('Navigator tests', () => {
       expect(response.body.place.main_category).to.have.property('identifier', 'Theater');
     });
   });
+  it('Send feedback, POST request should pass and error message should appear in popup', () => {
+    cy.get(selectors.common.headerContainer)
+      .find(selectors.common.navigation)
+      .find('.iconav-bubble-2')
+      .parent()
+      .find('.text')
+      .contains('Predloži ideju - Pošalji komentar')
+      .click();
+    cy.get(selectors.common.navLefthandFormContainer).find('input[placeholder="Ime i prezime"]').type('Test User');
+    cy.get(selectors.common.navLefthandFormContainer).find('input[placeholder="Email"]').type('testuser@email.com');
+    cy.get(selectors.common.navLefthandFormContainer).find('textarea[placeholder="Komentar"]').click().type('Test feedback');
+    cy.get(selectors.common.navLefthandFormContainer).contains('Kritika').click();
+    cy.intercept('POST', 'http://www.navigator.ba/feedback' , (req) => {
+      const parsedBody = new URLSearchParams(req.body);
+      expect(parsedBody.get('name_surname')).to.eq('Test User');
+      expect(parsedBody.get('email')).to.eq('testuser@email.com');
+      expect(parsedBody.get('comment')).to.eq('Test feedback');
+      expect(parsedBody.get('type')).to.eq('Kritika');
+    }).as('sendFeedback');
+    cy.get(selectors.common.navLefthandFormContainer).find('.green-button').contains('Pošalji').click();
+    cy.wait('@sendFeedback').then((interception) => {
+      expect(interception.response.statusCode).to.equal(200);
+      expect(interception.response.body).to.have.property('error', true);
+      expect(interception.response.body.error_msgs).to.include('Došlo je do neočekivane greške. Molimo pokušajte ponovo');
+    // check red error message
+    cy.get(selectors.common.navLefthandFormContainer)
+      .find('.alert-error')
+      .should('contain', 'Greška prilikom slanja poruke')
+      .and('contain', 'Došlo je do neočekivane greške. Molimo pokušajte ponovo')
+      .and('have.css', 'color', 'rgb(185, 74, 72)');
+    });
+  });
 });
