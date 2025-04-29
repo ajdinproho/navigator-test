@@ -57,3 +57,23 @@ Cypress.Commands.add('switchLanguage', (language) => {
 Cypress.Commands.add('openHomePageClickingOnLogoInHeader', () => {
     cy.get(selectors.common.headerContainer).find('.logo').click();
 });
+
+Cypress.Commands.add('searchForSomethingPressingEnter', (text) => {
+    cy.get(selectors.common.headerContainer)
+      .find(selectors.common.headerSearch)
+      .find('input[placeholder="Traži ulicu ili objekat"]')
+      .click()
+      .type(`${text}{enter}`);
+});
+
+Cypress.Commands.add('searchForSomethingClickingSearchIcon', (text) => {
+    cy.get(selectors.common.headerContainer)
+      .find(selectors.common.headerSearch)
+      .find('input[placeholder="Traži ulicu ili objekat"]')
+      .click()
+      .type(`${text}`);
+    cy.get(selectors.common.headerContainer)
+       .find(selectors.common.headerSearch)
+       .find('.iconav-search')
+       .click();
+});
