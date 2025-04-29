@@ -38,4 +38,23 @@ describe('Navigator tests', () => {
       expect(interception.response.body.places).to.have.length(50);
     });
   });
+  it('Navigate directly to the link of a place and check is it successfully loaded on map and on the left side, also check GET request and verify some of the responses', () => {
+    cy.visit('http://www.navigator.ba/#/p/pozoriste-mladih?list=sarajevska-pozorista');
+    cy.checkPlace('Pozorište', 'Pozorište mladih Sarajevo', 'Kulovića 8', '033 202 303', 'pozmladi@bih.net.ba');
+    cy.checkQuickInfoInMap('Pozorište mladih', 'Kulovića 8', '033 202 303', 'www.pozoristemladih.ba');
+    cy.request({
+      method: 'GET',
+      url: 'http://www.navigator.ba/places/pozoriste-mladih',
+      failOnStatusCode: false
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+      expect(response.body.place).to.have.property('name', 'Pozorište mladih Sarajevo');
+      expect(response.body.place).to.have.property('city_name', 'Sarajevo');
+      expect(response.body.place).to.have.property('category_identifier', 'Theater');
+      expect(response.body.place).to.have.property('email', 'pozmladi@bih.net.ba');
+      expect(response.body.place).to.have.property('slug', 'pozoriste-mladih');
+      expect(response.body.place.main_category).to.have.property('name', 'Pozorište');
+      expect(response.body.place.main_category).to.have.property('identifier', 'Theater');
+    });
+  });
 });
