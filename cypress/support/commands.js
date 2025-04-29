@@ -53,3 +53,7 @@ Cypress.Commands.add('switchLanguage', (language) => {
     //provjera da li je EN aktivan u headeru
     cy.get('#header_container').find('.languages').contains(`${language}`).parent().should('have.class', 'active');
 });
+
+Cypress.Commands.add('openHomePageClickingOnLogoInHeader', () => {
+    cy.get(selectors.common.headerContainer).find('.logo').click();
+});
