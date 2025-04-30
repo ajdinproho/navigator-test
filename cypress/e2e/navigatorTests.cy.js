@@ -206,4 +206,17 @@ describe('Navigator tests', () => {
     cy.checkQuickInfoInMap(`${placeName}`, 'Proleterskih brigada', '', '');
     cy.checkPlace('Advokat', `${placeName}`, 'Proleterskih brigada', '', '');
   });
+  it('Give a rate for the opened place and check is it added' , () => {
+    cy.get(selectors.common.placeDetails)
+      .find(selectors.common.content)
+      .find('.rating-web')
+      .find('.stars-container')
+      .find('[data-value="5"]')
+      .click({force: true});
+    cy.get(selectors.common.placeDetails)
+      .find(selectors.common.content)
+      .find('.rating-web')
+      .find('.nmb-votes')
+      .should('contain', '1 ocjena');
+  });
 });
