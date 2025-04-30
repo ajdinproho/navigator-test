@@ -135,6 +135,20 @@ describe('Navigator tests', () => {
       .should('have.class', 'required')
       .and('have.css', 'border-color', 'rgb(185, 74, 72)');
   });
+  it('Try to send feedback without entering any data - comment field should change border color to red because it is required', () => {
+    cy.get(selectors.common.headerContainer)
+      .find(selectors.common.navigation)
+      .find('.iconav-bubble-2')
+      .parent()
+      .find('.text')
+      .contains('Predloži ideju - Pošalji komentar')
+      .click();
+    cy.get(selectors.common.navLefthandFormContainer).find('.green-button').contains('Pošalji').click();
+    cy.get(selectors.common.navLefthandFormContainer)
+      .find('textarea[placeholder="Komentar"]')
+      .should('have.class', 'required')
+      .and('have.css', 'border-color', 'rgb(185, 74, 72)');
+  });
   it('Check recent search clicking on a button - it should search for last searched word', () => {
     cy.searchForSomethingPressingEnter('Pionirska dolina');
     cy.get('.search-results').find('li').contains('Zoološki vrt Pionirska dolina').should('be.visible');
