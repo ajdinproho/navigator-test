@@ -77,3 +77,10 @@ Cypress.Commands.add('searchForSomethingClickingSearchIcon', (text) => {
        .find('.iconav-search')
        .click();
 });
+
+Cypress.Commands.add('checkSuggestedSearchResult', (category, name) => {
+    cy.get('.search-suggestion-box-wrapper')
+      .contains(`${category}`)
+      .parent()
+      .should('contain', `${name}`);
+});

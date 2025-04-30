@@ -106,7 +106,7 @@ describe('Navigator smoke test', () => {
     cy.checkPlace('Kozmetika', 'DM - Ferhadija', 'Ferhadija 25', '033 572 115', 'info@dm-drogeriemarkt.ba');
     cy.checkQuickInfoInMap('DM - Ferhadija', 'Ferhadija 25', '033 572 115', 'www.dm-drogeriemarkt.ba');
   });
-  it('Map interaction - Open Sarajevska pozorišta, click on Narodno pozorište on the map and check if it opened', () => {
+  it('Map interaction - Open Sarajevska pozorišta, click on Narodno pozorište on the map and check if it opens', () => {
     cy.openHomePageClickingOnLogoInHeader().click();
     cy.wait(500);
     cy.get('.categories')
