@@ -81,12 +81,15 @@ describe('Navigator smoke test', () => {
       .find('input[placeholder="Traži ulicu ili objekat"]')
       .click()
       .type('{enter}');
+    // I noticed that sometimes it fetch street-icon@2x.png and sometimes street-icon.png - because of the resolution
+    // so I will check if it contains street-icon or street-icon@2x
     cy.get('.search-panel')
       .find('.search-results')
       .contains('Ferhadija')
       .parent()
       .find('img')
-      .should('have.attr', 'src', 'http://www.navigator.ba/assets/street-icon@2x.png');
+      .should('have.attr', 'src')
+      .and('match', /street-icon(@2x)?\.png$/)
   });
   it('Search and display existing place - Enter name of existing place, select that place and check if correct data is displayed when clicking on the search icon', () => {
     cy.get(selectors.common.headerContainer)
