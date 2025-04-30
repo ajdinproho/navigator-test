@@ -62,6 +62,9 @@ describe('Navigator tests', () => {
       expect(response.body.place.main_category).to.have.property('identifier', 'Theater');
     });
   });
+  // I wrote this because while testing I noticed that the request always passes with 200 status code
+  // and the response is always the same error message
+  // so I will check if the request is successful and if the response contains the error message
   it('Send feedback, POST request should pass and error message should appear in popup', () => {
     cy.get(selectors.common.headerContainer)
       .find(selectors.common.navigation)
