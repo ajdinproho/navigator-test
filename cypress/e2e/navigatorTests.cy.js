@@ -219,4 +219,22 @@ describe('Navigator tests', () => {
       .find('.nmb-votes')
       .should('contain', '1 ocjena');
   });
+  it('Visit page URL of a place that does not exist should navigate to 404 not found page', () => {
+    cy.visit('www.navigator.ba/#/p/nepostojeci-objekat-ajdin');
+    //check URL
+    cy.url().should('include', '/#/404');
+    cy.request({
+      method: 'GET',
+      url: 'http://www.navigator.ba/places/nepostojeci-objekat-ajdin',
+      failOnStatusCode: false
+    }).then((response) => {
+      expect(response.status).to.eq(404);
+    });
+    cy.get('.error_404').find('.http-error').find('img').should('have.attr','src', '/assets/404.png');
+    cy.get('.error_404')
+      .find('.http-error')
+      .should('contain', 'Stranica koju ste tražili ne postoji')
+      .and('contain', 'Moguće je da ste pogrešno ukucali adresu ili je sadržaj premješten.');
+    cy.get('.static-header').find('.logo').click();
+  });
 });
