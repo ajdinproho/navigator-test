@@ -1,4 +1,5 @@
 import { selectors } from "../helpers/selectors.js";
+
 describe('Navigator smoke test', () => {
   it('Open navigator homepage and check default URL', () => {
     cy.visit('www.navigator.ba');
@@ -301,5 +302,17 @@ describe('Navigator smoke test', () => {
       .find('.text')
       .contains('Predloži ideju - Pošalji komentar')
       .should('not.be.visible');
+  });
+  it('Should not execute script when searching with XSS payload - this test should fail because bug exists in production', () => {
+    cy.viewport(1512, 982);
+    const text = 'ajdin test';
+    cy.window().then((win) => {
+      cy.stub(win, 'alert').as('alert');
+    });
+    cy.searchForSomethingClickingSearchIcon(text);
+    // allow time for script to trigger
+    cy.wait(1000);
+    // Assert that alert was never called
+    cy.get('@alert').should('not.have.been.called');
   });
 });
