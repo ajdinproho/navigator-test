@@ -29,10 +29,7 @@ describe('Navigator tests', () => {
     });
   });
   it('Open one of the categories "Smještaj" and check if the request is successful', () => {
-    cy.intercept({
-      method: 'GET',
-      url: 'http://www.navigator.ba/places?category_id=3&offset=0&lat=43.8513&lon=18.38871'
-    }).as('getSmjestaj');
+    cy.intercept('GET','http://www.navigator.ba/places?category_id=3&offset=0&lat=43.8513&lon=18.38871').as('getSmjestaj');
     cy.getCategory('SMJEŠTAJ').click({ force: true });
     cy.wait('@getSmjestaj').then((interception) => {
       // running this test in the cypress UI while console is open will pass if I check status code for 200
