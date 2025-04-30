@@ -4,7 +4,11 @@
   "description": "Testing task for Navigator",
   "main": "index.js",
   "scripts": {
-    "test": "npx cypress run"
+    "test": "npx cypress run",
+    "chrome": "npx cypress run --browser chrome",
+    "firefox": "npx cypress run --browser firefox",
+    "edge": "npx cypress run --browser edge",
+    "cypress:open": "npx cypress open"
    },
   "repository": {
     "type": "git",
