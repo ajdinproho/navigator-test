@@ -113,6 +113,28 @@ describe('Navigator tests', () => {
     cy.checkSuggestedSearchResult('Kategorije', 'Kupovina');
     cy.checkSuggestedSearchResult('Kategorije', 'Gradske ulice');
   });
+  it('Error message should appear in popup if you try to create a place without entering any data', () => {
+    cy.get(selectors.common.headerContainer)
+      .find(selectors.common.navigation)
+      .find('.iconav-plus')
+      .parent()
+      .find('.text')
+      .contains('Kreiraj objekat')
+      .click();
+    cy.get(selectors.common.navLefthandFormContainer).find('.submit-container').find('.btn-success').contains('Kreiraj').click({ force: true });
+    cy.get(selectors.common.navLefthandFormContainer)
+      .find('.validation-error-msg')
+      .should('contain', 'Forma sadrži nevalidne podatke. Molimo ispravite i pokušajte ponovo')
+      .and('have.css', 'color', 'rgb(185, 74, 72)');
+    cy.get(selectors.common.navLefthandFormContainer)
+      .find('.categories-error-msg')
+      .should('contain', 'Molimo odaberite kategoriju kojoj objekat pripada')
+      .and('have.css', 'color', 'rgb(185, 74, 72)');
+    cy.get(selectors.common.navLefthandFormContainer)
+      .find('#poi_name')
+      .should('have.class', 'required')
+      .and('have.css', 'border-color', 'rgb(185, 74, 72)');
+  });
   it('Check recent search clicking on a button - it should search for last searched word', () => {
     cy.searchForSomethingPressingEnter('Pionirska dolina');
     cy.get('.search-results').find('li').contains('Zoološki vrt Pionirska dolina').should('be.visible');
