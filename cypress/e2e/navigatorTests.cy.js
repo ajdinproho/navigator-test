@@ -97,6 +97,22 @@ describe('Navigator tests', () => {
       .and('have.css', 'color', 'rgb(185, 74, 72)');
     });
   });
+  it('Click in the empty search field should open dropdown with lists and categories', () => {
+    cy.get(selectors.common.headerContainer)
+      .find(selectors.common.headerSearch)
+      .find('input[placeholder="Traži ulicu ili objekat"]')
+      .click();
+    cy.get('.search-suggestion-box-wrapper').should('be.visible');
+    cy.checkSuggestedSearchResult('Ponude', 'Sarajevska pozorišta');
+    cy.checkSuggestedSearchResult('Ponude', 'Nextbike');
+    cy.checkSuggestedSearchResult('Ponude', 'Smoke-free public places');
+    cy.checkSuggestedSearchResult('Kategorije', 'Smještaj');
+    cy.checkSuggestedSearchResult('Kategorije', 'Hrana');
+    cy.checkSuggestedSearchResult('Kategorije', 'Kafa');
+    cy.checkSuggestedSearchResult('Kategorije', 'Noćni život');
+    cy.checkSuggestedSearchResult('Kategorije', 'Kupovina');
+    cy.checkSuggestedSearchResult('Kategorije', 'Gradske ulice');
+  });
   it('Check recent search clicking on a button - it should search for last searched word', () => {
     cy.searchForSomethingPressingEnter('Pionirska dolina');
     cy.get('.search-results').find('li').contains('Zoološki vrt Pionirska dolina').should('be.visible');
