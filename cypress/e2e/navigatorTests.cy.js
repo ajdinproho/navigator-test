@@ -161,4 +161,49 @@ describe('Navigator tests', () => {
       .should('contain', 'Pionirska dolina');
     cy.get('.search-results').find('li').contains('Zoološki vrt Pionirska dolina').should('be.visible');
   });
+  function generateRandomString(length = 10) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    return Array.from({ length }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
+  }
+  const placeName = `Test place ${generateRandomString(5)}`;
+  it('When creating a place, POST request places will fail, reload and search for the place, it should be visible in the list and map', () => {
+    cy.get(selectors.common.headerContainer)
+      .find(selectors.common.navigation)
+      .find('.iconav-plus')
+      .parent()
+      .find('.text')
+      .contains('Kreiraj objekat')
+      .click();
+    cy.get(selectors.common.navLefthandFormContainer).find('#poi_name').type(`${placeName}`);
+    cy.get(selectors.common.navLefthandFormContainer).find('#poi_city_name').type('Jablanica');
+    cy.get('.tt-dropdown-menu').contains('Jablanica').click();
+    cy.get(selectors.common.navLefthandFormContainer).find('#poi_zip_code').should('have.value', '88420');
+    cy.get(selectors.common.navLefthandFormContainer).find('#poi_place_id').type('Proleterskih brigada');
+    cy.get(selectors.common.navLefthandFormContainer)
+      .find('.category-selector-container')
+      .find('.btn')
+      .contains('Odaberite kategoriju')
+      .click({force: true});
+    cy.get(selectors.common.navLefthandFormContainer).find('.category-selector-view').find('select').select('Biznis');
+    cy.get(selectors.common.navLefthandFormContainer)
+      .find('.category-selector-view')
+      .find('.span3').eq(1)
+      .find('select')
+      .select('Advokat');
+    cy.intercept('POST', 'http://www.navigator.ba/places/').as('createPlace');
+    cy.get(selectors.common.navLefthandFormContainer)
+      .find('.submit-container')
+      .find('.btn-success')
+      .contains('Kreiraj')
+      .click({ force: true });
+    cy.wait('@createPlace').then((interception) => {
+      expect(interception.response.statusCode).to.equal(500);
+    });
+    cy.reload();
+    cy.searchForSomethingClickingSearchIcon(`${placeName}`);
+    // click on the place and check info
+    cy.get('.search-results').find('li').contains(`${placeName}`).click();
+    cy.checkQuickInfoInMap(`${placeName}`, 'Proleterskih brigada', '', '');
+    cy.checkPlace('Advokat', `${placeName}`, 'Proleterskih brigada', '', '');
+  });
 });
