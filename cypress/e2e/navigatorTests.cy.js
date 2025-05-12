@@ -1,11 +1,14 @@
 import { selectors } from '../helpers/selectors.js';
+import { NavigatorPage } from '../support/pages/NavigatorPage.js';
+
+const navigatorPage = new NavigatorPage();
 
 describe('Navigator tests', () => {
   it('Open navigator page and verify that requests made on page load are successful', () => {
-    cy.visit('www.navigator.ba');
+    navigatorPage.visitHomePage();
     cy.request({
       method: 'GET',
-      url: 'http://www.navigator.ba/categories',
+      url: '/categories',
       failOnStatusCode: false
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -13,7 +16,7 @@ describe('Navigator tests', () => {
     });
     cy.request({
       method: 'GET',
-      url: 'http://www.navigator.ba/lists',
+      url: '/lists',
       failOnStatusCode: false
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -21,7 +24,7 @@ describe('Navigator tests', () => {
     });
     cy.request({
       method: 'GET',
-      url: 'http://www.navigator.ba/categories/suggested',
+      url: '/categories/suggested',
       failOnStatusCode: false
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -30,7 +33,7 @@ describe('Navigator tests', () => {
   });
   it('Open one of the categories "Smještaj" and check if the request is successful', () => {
     cy.intercept('GET','http://www.navigator.ba/places?category_id=3&offset=0&lat=43.8513&lon=18.38871').as('getSmjestaj');
-    cy.getCategory('SMJEŠTAJ').click({ force: true });
+    navigatorPage.openCategory('SMJEŠTAJ');
     cy.wait('@getSmjestaj').then((interception) => {
       // running this test in the cypress UI while console is open will pass if I check status code for 200
       // but if I run it in the cypress UI without console open, it will fail because status code is 304
@@ -63,17 +66,9 @@ describe('Navigator tests', () => {
   // and the response is always the same error message
   // so I will check if the request is successful and if the response contains the error message
   it('Send feedback, POST request should pass and error message should appear in popup', () => {
-    cy.get(selectors.common.headerContainer)
-      .find(selectors.common.navigation)
-      .find('.iconav-bubble-2')
-      .parent()
-      .find('.text')
-      .contains('Predloži ideju - Pošalji komentar')
-      .click();
-    cy.get(selectors.common.navLefthandFormContainer).find('input[placeholder="Ime i prezime"]').type('Test User');
-    cy.get(selectors.common.navLefthandFormContainer).find('input[placeholder="Email"]').type('testuser@email.com');
-    cy.get(selectors.common.navLefthandFormContainer).find('textarea[placeholder="Komentar"]').click().type('Test feedback');
-    cy.get(selectors.common.navLefthandFormContainer).contains('Kritika').click();
+    navigatorPage.openFeedbackForm();
+    // fill the form
+    navigatorPage.fillFeedbackForm('Test User', 'testuser@email.com', 'Test feedback', 'Kritika');
     cy.intercept('POST', 'http://www.navigator.ba/feedback' , (req) => {
       const parsedBody = new URLSearchParams(req.body);
       expect(parsedBody.get('name_surname')).to.eq('Test User');
@@ -81,17 +76,13 @@ describe('Navigator tests', () => {
       expect(parsedBody.get('comment')).to.eq('Test feedback');
       expect(parsedBody.get('type')).to.eq('Kritika');
     }).as('sendFeedback');
-    cy.get(selectors.common.navLefthandFormContainer).find('.green-button').contains('Pošalji').click();
+    navigatorPage.submitFeedbackForm();
     cy.wait('@sendFeedback').then((interception) => {
       expect(interception.response.statusCode).to.equal(200);
       expect(interception.response.body).to.have.property('error', true);
       expect(interception.response.body.error_msgs).to.include('Došlo je do neočekivane greške. Molimo pokušajte ponovo');
     // check red error message
-    cy.get(selectors.common.navLefthandFormContainer)
-      .find('.alert-error')
-      .should('contain', 'Greška prilikom slanja poruke')
-      .and('contain', 'Došlo je do neočekivane greške. Molimo pokušajte ponovo')
-      .and('have.css', 'color', 'rgb(185, 74, 72)');
+    navigatorPage.checkErrorMessage();
     });
   });
   it('Click in the empty search field should open dropdown with lists and categories', () => {
