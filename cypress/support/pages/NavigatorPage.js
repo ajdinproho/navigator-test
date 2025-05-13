@@ -1,4 +1,4 @@
-import selectors from '../../selectors/selectors';
+import { selectors } from '../../helpers/selectors.js';
 
 export class NavigatorPage {
     visitHomePage() {
@@ -10,7 +10,29 @@ export class NavigatorPage {
     }
 
     openFeedbackForm() {
-        cy.get('.iconav-bubble-2').parent().find('.text').contains('Predloži ideju - Pošalji komentar').click();
+        cy.get('.iconav-bubble-2')
+          .parent()
+          .find('.text')
+          .contains('Predloži ideju - Pošalji komentar')
+          .click();
+    }
+
+    openCreatePlaceForm() {
+        cy.get(selectors.common.headerContainer)
+          .find(selectors.common.navigation)
+          .find('.iconav-plus')
+          .parent()
+          .find('.text')
+          .contains('Kreiraj objekat')
+          .click();
+    }
+
+    submitCreatePlaceForm() {
+        cy.get(selectors.common.navLefthandFormContainer)
+          .find('.submit-container')
+          .find('.btn-success')
+          .contains('Kreiraj')
+          .click({ force: true });
     }
 
     fillFeedbackForm(name, email, comment, type) {
@@ -21,7 +43,10 @@ export class NavigatorPage {
     }
 
     submitFeedbackForm() {
-        cy.get(selectors.common.navLefthandFormContainer).find('.green-button').contains('Pošalji').click();
+        cy.get(selectors.common.navLefthandFormContainer)
+          .find('.green-button')
+          .contains('Pošalji')
+          .click();
     }
 
     checkErrorMessage() {
