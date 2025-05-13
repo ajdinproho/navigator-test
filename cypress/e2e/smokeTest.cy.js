@@ -2,7 +2,7 @@ import { selectors } from "../helpers/selectors.js";
 
 describe('Navigator smoke test', () => {
   it('Open navigator homepage and check default URL', () => {
-    cy.visit('www.navigator.ba');
+    cy.visit('/');
     // check url
     cy.url().should('include', 'www.navigator.ba/#/categories')
   });
