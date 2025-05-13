@@ -32,7 +32,7 @@ describe('Navigator tests', () => {
     });
   });
   it('Open one of the categories "Smještaj" and check if the request is successful', () => {
-    cy.intercept('GET','http://www.navigator.ba/places?category_id=3&offset=0&lat=43.8513&lon=18.38871').as('getSmjestaj');
+    cy.intercept('GET','/places?category_id=3&offset=0&lat=43.8513&lon=18.38871').as('getSmjestaj');
     navigatorPage.openCategory('SMJEŠTAJ');
     cy.wait('@getSmjestaj').then((interception) => {
       // running this test in the cypress UI while console is open will pass if I check status code for 200
@@ -44,12 +44,12 @@ describe('Navigator tests', () => {
     });
   });
   it('Navigate directly to the link of a place and check is it successfully loaded on map and on the left side, also check GET request and verify some of the responses', () => {
-    cy.visit('http://www.navigator.ba/#/p/pozoriste-mladih?list=sarajevska-pozorista');
+    cy.visit('/#/p/pozoriste-mladih?list=sarajevska-pozorista');
     cy.checkPlace('Pozorište', 'Pozorište mladih Sarajevo', 'Kulovića 8', '033 202 303', 'pozmladi@bih.net.ba');
     cy.checkQuickInfoInMap('Pozorište mladih', 'Kulovića 8', '033 202 303', 'www.pozoristemladih.ba');
     cy.request({
       method: 'GET',
-      url: 'http://www.navigator.ba/places/pozoriste-mladih',
+      url: '/places/pozoriste-mladih',
       failOnStatusCode: false
     }).then((response) => {
       expect(response.status).to.eq(200);
@@ -69,7 +69,7 @@ describe('Navigator tests', () => {
     navigatorPage.openFeedbackForm();
     // fill the form
     navigatorPage.fillFeedbackForm('Test User', 'testuser@email.com', 'Test feedback', 'Kritika');
-    cy.intercept('POST', 'http://www.navigator.ba/feedback' , (req) => {
+    cy.intercept('POST', '/feedback' , (req) => {
       const parsedBody = new URLSearchParams(req.body);
       expect(parsedBody.get('name_surname')).to.eq('Test User');
       expect(parsedBody.get('email')).to.eq('testuser@email.com');
@@ -102,14 +102,8 @@ describe('Navigator tests', () => {
     cy.checkSuggestedSearchResult('Kategorije', 'Gradske ulice');
   });
   it('Error message should appear in popup if you try to create a place without entering any data', () => {
-    cy.get(selectors.common.headerContainer)
-      .find(selectors.common.navigation)
-      .find('.iconav-plus')
-      .parent()
-      .find('.text')
-      .contains('Kreiraj objekat')
-      .click();
-    cy.get(selectors.common.navLefthandFormContainer).find('.submit-container').find('.btn-success').contains('Kreiraj').click({ force: true });
+    navigatorPage.openCreatePlaceForm();
+    navigatorPage.submitCreatePlaceForm();
     cy.get(selectors.common.navLefthandFormContainer)
       .find('.validation-error-msg')
       .should('contain', 'Forma sadrži nevalidne podatke. Molimo ispravite i pokušajte ponovo')
@@ -124,14 +118,8 @@ describe('Navigator tests', () => {
       .and('have.css', 'border-color', 'rgb(185, 74, 72)');
   });
   it('Try to send feedback without entering any data - comment field should change border color to red because it is required', () => {
-    cy.get(selectors.common.headerContainer)
-      .find(selectors.common.navigation)
-      .find('.iconav-bubble-2')
-      .parent()
-      .find('.text')
-      .contains('Predloži ideju - Pošalji komentar')
-      .click();
-    cy.get(selectors.common.navLefthandFormContainer).find('.green-button').contains('Pošalji').click();
+    navigatorPage.openFeedbackForm();
+    navigatorPage.submitFeedbackForm();
     cy.get(selectors.common.navLefthandFormContainer)
       .find('textarea[placeholder="Komentar"]')
       .should('have.class', 'required')
@@ -155,13 +143,7 @@ describe('Navigator tests', () => {
   }
   const placeName = `Test place ${generateRandomString(5)}`;
   it('When creating a place, POST request places will fail, reload and search for the place, it should be visible in the list and map', () => {
-    cy.get(selectors.common.headerContainer)
-      .find(selectors.common.navigation)
-      .find('.iconav-plus')
-      .parent()
-      .find('.text')
-      .contains('Kreiraj objekat')
-      .click();
+    navigatorPage.openCreatePlaceForm();
     cy.get(selectors.common.navLefthandFormContainer).find('#poi_name').type(`${placeName}`);
     cy.get(selectors.common.navLefthandFormContainer).find('#poi_city_name').type('Jablanica');
     cy.get('.tt-dropdown-menu').contains('Jablanica').click();
@@ -178,12 +160,8 @@ describe('Navigator tests', () => {
       .find('.span3').eq(1)
       .find('select')
       .select('Advokat');
-    cy.intercept('POST', 'http://www.navigator.ba/places/').as('createPlace');
-    cy.get(selectors.common.navLefthandFormContainer)
-      .find('.submit-container')
-      .find('.btn-success')
-      .contains('Kreiraj')
-      .click({ force: true });
+    cy.intercept('POST', '/places/').as('createPlace');
+    navigatorPage.submitCreatePlaceForm();
     cy.wait('@createPlace').then((interception) => {
       expect(interception.response.statusCode).to.equal(500);
     });
@@ -208,12 +186,12 @@ describe('Navigator tests', () => {
       .should('contain', '1 ocjena');
   });
   it('Visit page URL of a place that does not exist should navigate to 404 not found page', () => {
-    cy.visit('www.navigator.ba/#/p/nepostojeci-objekat-ajdin');
+    cy.visit('/#/p/nepostojeci-objekat-ajdin');
     //check URL
     cy.url().should('include', '/#/404');
     cy.request({
       method: 'GET',
-      url: 'http://www.navigator.ba/places/nepostojeci-objekat-ajdin',
+      url: '/places/nepostojeci-objekat-ajdin',
       failOnStatusCode: false
     }).then((response) => {
       expect(response.status).to.eq(404);
