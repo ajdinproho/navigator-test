@@ -69,6 +69,7 @@ describe('Navigator tests', () => {
     navigatorPage.openFeedbackForm();
     // fill the form
     navigatorPage.fillFeedbackForm('Test User', 'testuser@email.com', 'Test feedback', 'Kritika');
+    // navigatorPage.fillFeedbackFormWithJson(); -> this is how to use fixture
     cy.intercept('POST', '/feedback' , (req) => {
       const parsedBody = new URLSearchParams(req.body);
       expect(parsedBody.get('name_surname')).to.eq('Test User');

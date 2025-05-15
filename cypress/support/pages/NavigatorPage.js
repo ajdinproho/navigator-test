@@ -42,6 +42,16 @@ export class NavigatorPage {
         cy.contains(type).click();
     }
 
+    fillFeedbackFormWithJson(){
+        cy.fixture('user').then((userData) => {
+            console.log('Loaded fixture:', userData); // ✅ check what's printed in Cypress runner
+            cy.get('input[placeholder="Ime i prezime"]').click().type(userData.name);
+            cy.get('input[placeholder="Email"]').click().type(userData.email);
+            cy.get('textarea[placeholder="Komentar"]').click().type(userData.comment);
+            cy.contains(userData.pohvala).click();
+        })
+    }
+
     submitFeedbackForm() {
         cy.get(selectors.common.navLefthandFormContainer)
           .find('.green-button')
